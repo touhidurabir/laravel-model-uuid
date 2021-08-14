@@ -62,6 +62,20 @@ Or can be used with the combination of model-uuid config as such:
 $table->string(config('model-uuid.column'))->nullable()->unique()->index();
 ```
 
+This package also include some helper method that make it easy to find model records via UUID. for example
+
+```php
+User::byUuid($uuid)->where('active', true)->first(); // single uuid
+User::byUuid([$uuid1, $uuid2])->where('active', true)->get(); // multiple uuid
+```
+
+Or simple and direct find
+
+```php
+User::findByUuid($uuid); // single uuid
+User::findByUuid([$uuid1, $uuid2]); // multiple uuid
+```
+
 > The package also provide a bit of safe guard by checking if the model table has the given uuid column . 
 >
 > If the uuid column not found for model table schema, it will not create and attach an uuid.
