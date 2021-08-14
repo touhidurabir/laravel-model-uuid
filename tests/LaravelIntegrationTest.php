@@ -146,4 +146,77 @@ class LaravelIntegrationTest extends TestCase {
         $this->assertNull($profile->uuid);
     }
 
+
+    /**
+     * @test
+     */
+    public function it_allow_scope_to_attach_query_clause_via_uuid() {
+
+        $uuid = Generator::uuid4();
+
+        User::create([
+            'email'     => uniqid() . '@localhost.com',
+            'password'  => bcrypt('password'),
+            'uuid'      => $uuid,
+        ]);
+
+        $user = User::byUuid($uuid)->first();
+
+        $this->assertEquals($user->uuid, $uuid);
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_allow_scope_to_attach_query_clause_via_array_of_uuid() {
+
+        $uuid1 = Generator::uuid4();
+        $uuid2 = Generator::uuid4();
+
+        User::create([
+            'email'     => uniqid() . '@localhost.com',
+            'password'  => bcrypt('password'),
+            'uuid'      => $uuid1,
+        ]);
+
+        User::create([
+            'email'     => uniqid() . '@localhost.com',
+            'password'  => bcrypt('password'),
+            'uuid'      => $uuid2,
+        ]);
+
+        $users = User::byUuid([$uuid1, $uuid2])->get();
+
+        $this->assertEquals($users->count(), 2);
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_allow_find_record_via_uuid() {
+
+        $uuid1 = Generator::uuid4();
+        $uuid2 = Generator::uuid4();
+
+        User::create([
+            'email'     => uniqid() . '@localhost.com',
+            'password'  => bcrypt('password'),
+            'uuid'      => $uuid1,
+        ]);
+
+        User::create([
+            'email'     => uniqid() . '@localhost.com',
+            'password'  => bcrypt('password'),
+            'uuid'      => $uuid2,
+        ]);
+
+        $user = User::findByUuid($uuid1);
+        $users = User::findByUuid([$uuid1, $uuid2]);
+
+        $this->assertEquals($user->uuid, $uuid1);
+        $this->assertEquals($users->count(), 2);
+    }
+
 }

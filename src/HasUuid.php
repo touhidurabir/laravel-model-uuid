@@ -135,7 +135,7 @@ trait HasUuid {
 
         if ( is_array($uuid) ) {
 
-            return static::where($this->getUuidFieldName(), $uuid)->get();
+            return static::whereIn((new self)->getUuidFieldName(), $uuid)->get();
         }
         
         return static::byUuid($uuid)->first();
