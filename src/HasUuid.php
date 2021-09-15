@@ -6,6 +6,7 @@ use Throwable;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Touhidurabir\ModelUuid\UuidGenerator\Generator;
+use Touhidurabir\ModelUuid\Concerns\CanSaveQuietly;
 
 trait HasUuid {
 
@@ -55,7 +56,10 @@ trait HasUuid {
             
             $model->{$uuidFieldName} ?: $model->{$uuidFieldName} = $self->generateUuid();
 
-			// ! in_array($self->attachEvent, $self->saveActionForEvents) ?: $model->save();
+            if ( in_array($self->attachEvent, $self->saveActionForEvents) ) {
+
+                method_exists($self, 'saveQuietly') ? $model->saveQuietly() : $model->saveModelQuietly();
+            }
         });
 	}
 
