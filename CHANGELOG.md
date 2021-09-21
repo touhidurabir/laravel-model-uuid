@@ -15,3 +15,6 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.2] - 2021-09-15
 - Add save quietly ability on uuid attach/update
+
+## [1.0.3] - 2021-09-22
+- Bug fix for non string attach event.
