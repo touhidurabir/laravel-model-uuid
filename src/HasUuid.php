@@ -45,6 +45,11 @@ trait HasUuid {
 
         $self->initializeHasUuid();
 
+        if ( ! is_string($self->attachEvent) ) {
+
+            return;
+        }
+
 		static::{$self->attachEvent}(function($model) use ($self) {
             
             $uuidFieldName  = $self->getUuidFieldName();
