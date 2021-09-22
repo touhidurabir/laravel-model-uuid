@@ -78,8 +78,8 @@ trait HasUuid {
 
 		$mapedValues = method_exists($this, 'uuidable') ? $this->uuidable() : null;
 
-		$this->uuidFieldName = $mapedValues['column']   ?? config('model-uuid.column');
-		$this->attachEvent   = $mapedValues['event']    ?? config('model-uuid.event');
+		$this->uuidFieldName = $mapedValues['column']   ?? config('model-uuid.column')  ?? 'uuid';
+		$this->attachEvent   = $mapedValues['event']    ?? config('model-uuid.event')   ?? 'creating';
 	}
 
 
