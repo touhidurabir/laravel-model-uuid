@@ -18,3 +18,6 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.3] - 2021-09-22
 - Bug fix for non string attach event.
+
+## [1.0.4] - 2021-09-22
+- Added default on missing config values.
