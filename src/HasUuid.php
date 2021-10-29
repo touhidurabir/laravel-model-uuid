@@ -11,6 +11,14 @@ use Touhidurabir\ModelUuid\Concerns\CanSaveQuietly;
 trait HasUuid {
 
     /**
+     * Should disbale uuid generation for this model
+     *
+     * @var bool
+     */
+    public static $disbaleUuidGeneration = false;
+
+
+    /**
      * UUID field column name
      *
      * @var string
@@ -33,6 +41,18 @@ trait HasUuid {
      */
 	protected $saveActionForEvents = ['created', 'updated'];
 
+
+    /**
+     * Disable/Enable uuid generation for model
+     *
+     * @param  bool $state
+     * @return void
+     */
+    public static function disbaleUuidGeneration(bool $state = true) {
+
+        static::$disbaleUuidGeneration = $state;
+    }
+
 	
 	/**
      * Attach UUID to model object
@@ -52,9 +72,14 @@ trait HasUuid {
 
 		static::{$self->attachEvent}(function($model) use ($self) {
             
+            if ( $self::$disbaleUuidGeneration ) {
+
+                return;
+            }
+            
             $uuidFieldName  = $self->getUuidFieldName();
 
-            if ( ! Schema::hasColumn($model->getTable(), $uuidFieldName) ) {
+            if ( ! $self->canHaveUuid($model->getTable(), $uuidFieldName) ) {
 
                 return;
             }
@@ -69,12 +94,26 @@ trait HasUuid {
 	}
 
 
+    /**
+     * Can model have uuid associated with it
+     *
+     * @param  mixed<string|null> $table
+     * @param  mixed<string|null> $column
+     * 
+     * @return bool
+     */
+    public function canHaveUuid(string $table = null, string $column = null) {
+
+        return Schema::hasColumn($table ?? $this->getTable(), $column ?? $this->getUuidColumnName());
+    }
+
+
 	/**
      * Initialize the trait
      *
      * @return void
      */
-	protected function initializeHasUuid() {
+	public function initializeHasUuid() {
 
 		$mapedValues = method_exists($this, 'uuidable') ? $this->uuidable() : null;
 
@@ -90,7 +129,7 @@ trait HasUuid {
      */
 	public function getUuidFieldName() {
         
-        return $this->uuidFieldName;
+        return $this->getUuidColumnName();
     }
 
 
@@ -113,6 +152,17 @@ trait HasUuid {
     public function generateUuid() {
         
         return Generator::uuid4();
+    }
+
+
+    /**
+     * Get the uuid
+     *
+     * @return string
+     */
+	public function getUuid() {
+
+        return $this->attributes[$this->getUuidFieldName()] ?? null;
     }
 
 
@@ -149,4 +199,23 @@ trait HasUuid {
         
         return static::byUuid($uuid)->first();
     }
+
+
+    /**
+     * Get the model/table associated hash column name
+     *
+     * @return string
+     */
+    protected function getUuidColumnName() {
+
+        $uuidColumn = null;
+
+        if ( ! $this->uuidFieldName ) {
+
+            $this->initializeHasUuid();
+        }
+
+        return $this->uuidFieldName;
+    }
+
 }

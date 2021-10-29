@@ -17,4 +17,15 @@ class Generator {
 
         return Uuid::uuid4()->toString();
     }
+
+    /**
+     * Get the UUID
+     *
+     * @return string
+     */
+    public function generate() {
+
+        return static::uuid4();
+    }
+    
 }

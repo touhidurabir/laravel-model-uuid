@@ -2,12 +2,14 @@
 
 namespace Touhidurabir\ModelUuid\Tests;
 
+use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase;
-use Touhidurabir\ModelUuid\Facades\ModelUuid;
-use Touhidurabir\ModelUuid\ModelUuidServiceProvider;
 use Touhidurabir\ModelUuid\Tests\App\User;
+use Touhidurabir\ModelUuid\Facades\ModelUuid;
 use Touhidurabir\ModelUuid\Tests\App\Profile;
 use Touhidurabir\ModelUuid\UuidGenerator\Generator;
+use Touhidurabir\ModelUuid\ModelUuidServiceProvider;
+use Touhidurabir\ModelUuid\Tests\Traits\LaravelTestBootstrapping;
 
 /**
  *  TO-DO: Need better testing.
@@ -15,56 +17,7 @@ use Touhidurabir\ModelUuid\UuidGenerator\Generator;
  */
 class LaravelIntegrationTest extends TestCase {
 
-    /**
-     * Get package providers.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return array
-     */
-    protected function getPackageProviders($app) {
-
-        return [
-            ModelUuidServiceProvider::class,
-        ];
-    }   
-    
-    
-    /**
-     * Override application aliases.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return array
-     */
-    protected function getPackageAliases($app) {
-        
-        return [
-            'ModelUuid' => ModelUuid::class,
-        ];
-    }
-
-
-    /**
-     * Define environment setup.
-     *
-     * @param  Illuminate\Foundation\Application $app
-     * @return void
-     */
-    protected function defineEnvironment($app) {
-
-        // Setup default database to use sqlite :memory:
-        $app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
-        ]);
-
-        $app['config']->set('app.url', 'http://localhost/');
-        $app['config']->set('app.debug', false);
-        $app['config']->set('app.key', env('APP_KEY', '1234567890123456'));
-        $app['config']->set('app.cipher', 'AES-128-CBC');
-    }
-
+    use LaravelTestBootstrapping;
 
     /**
      * Define database migrations.
@@ -80,6 +33,18 @@ class LaravelIntegrationTest extends TestCase {
         $this->beforeApplicationDestroyed(function () {
             $this->artisan('migrate:rollback', ['--database' => 'testbench'])->run();
         });
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_can_generate_uuid_via_facade() {
+
+        $uuid = ModelUuid::generate();
+
+        $this->assertIsString($uuid);
+        $this->assertTrue(Str::isUuid($uuid));
     }
 
 
@@ -217,6 +182,36 @@ class LaravelIntegrationTest extends TestCase {
 
         $this->assertEquals($user->uuid, $uuid1);
         $this->assertEquals($users->count(), 2);
+    }
+
+
+    /**
+     * @test
+     */
+    public function the_specific_model_uuid_generation_can_be_disabled_globally() {
+
+        User::disbaleUuidGeneration();
+
+        $user = User::create(['email' => 'mail@m.test', 'password' => '123']);
+        
+        $this->assertNull($user->getUuid());
+    }
+
+
+    /**
+     * @test
+     */
+    public function the_specific_model_uuid_disabled_generation_can_be_enabled() {
+
+        User::disbaleUuidGeneration();
+
+        $user = User::create(['email' => 'mail1@m.test', 'password' => '123']);
+        $this->assertNull($user->getUuid());
+
+        User::disbaleUuidGeneration(false);
+
+        $user = User::create(['email' => 'mail2@m.test', 'password' => '123']);
+        $this->assertNotNull($user->getUuid());
     }
 
 }

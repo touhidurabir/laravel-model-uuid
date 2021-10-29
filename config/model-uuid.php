@@ -28,6 +28,18 @@ return [
     |
     */
 
-    'event' => 'creating'
+    'event' => 'creating',
+
+
+    /*
+    |----------------------------------------------------------------------------
+    | The model uuid regeneration queue job
+    |----------------------------------------------------------------------------
+    | The queue job that will be called when run the 'uuid:regenerate' command to 
+    | regenerate the UUIDs for any specific models . 
+    |
+    */
+
+	'regeneration_job' => \Touhidurabir\ModelUuid\Jobs\ModelUuidRegeneratorJob::class,
 
 ];
