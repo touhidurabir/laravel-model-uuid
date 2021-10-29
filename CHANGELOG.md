@@ -28,3 +28,6 @@ All notable changes to this project will be documented in this file.
 - New Features like temporarily disable/enable added.
 - Tests update.
 - README update.
+
+## [1.1.1] - 2021-10-29
+- Bug fix
