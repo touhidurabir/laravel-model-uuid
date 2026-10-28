@@ -2,6 +2,7 @@
 
 namespace Touhidurabir\ModelUuid\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
 use Touhidurabir\ModelUuid\UuidGenerator\Generator;
@@ -11,6 +12,7 @@ class UuidGeneratorTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_return_a_string() {
 
         $uuid = Generator::uuid4();
@@ -22,6 +24,7 @@ class UuidGeneratorTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_return_valid_uuid() {
 
         $uuid = Generator::uuid4();
@@ -33,6 +36,7 @@ class UuidGeneratorTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_return_unique_uuid_each_time() {
 
         $uuid1 = Generator::uuid4();

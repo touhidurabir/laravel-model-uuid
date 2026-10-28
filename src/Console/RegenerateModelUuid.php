@@ -78,7 +78,10 @@ class RegenerateModelUuid extends Command {
 
             } else {
 
-                $job::dispatchNow($models, $this->option('update-all'));
+                // dispatchNow was removed in Laravel 10, dispatchSync is the replacement
+                $dispatchMethod = method_exists($job, 'dispatchSync') ? 'dispatchSync' : 'dispatchNow';
+
+                $job::{$dispatchMethod}($models, $this->option('update-all'));
 
                 $this->info('Model UUID regenration process completed');
             } 

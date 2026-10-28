@@ -2,6 +2,7 @@
 
 namespace Touhidurabir\ModelUuid\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase;
 use Touhidurabir\ModelUuid\Tests\App\User;
@@ -39,6 +40,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_can_generate_uuid_via_facade() {
 
         $uuid = ModelUuid::generate();
@@ -51,6 +53,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_add_an_uuid_on_creation() {
 
         $user = User::create([
@@ -65,6 +68,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_attach_unique_uuid_on_each_creation() {
 
         $user1 = User::create([
@@ -84,6 +88,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_do_not_override_uuid_if_already_attach_on_creation() {
 
         $uuid = Generator::uuid4();
@@ -101,6 +106,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_do_not_attach_any_uuid_if_no_uuidable_column_attached_to_model() {
 
         $profile = Profile::create([
@@ -115,6 +121,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_allow_scope_to_attach_query_clause_via_uuid() {
 
         $uuid = Generator::uuid4();
@@ -134,6 +141,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_allow_scope_to_attach_query_clause_via_array_of_uuid() {
 
         $uuid1 = Generator::uuid4();
@@ -160,6 +168,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function it_allow_find_record_via_uuid() {
 
         $uuid1 = Generator::uuid4();
@@ -188,6 +197,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function the_specific_model_uuid_generation_can_be_disabled_globally() {
 
         User::disbaleUuidGeneration();
@@ -201,6 +211,7 @@ class LaravelIntegrationTest extends TestCase {
     /**
      * @test
      */
+    #[Test]
     public function the_specific_model_uuid_disabled_generation_can_be_enabled() {
 
         User::disbaleUuidGeneration();
