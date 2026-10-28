@@ -2,14 +2,13 @@
 
 namespace Touhidurabir\ModelUuid;
 
-use Throwable;
+use ReflectionClass;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Touhidurabir\ModelUuid\UuidGenerator\Generator;
-use Touhidurabir\ModelUuid\Concerns\CanSaveQuietly;
 
-trait HasUuid {
-
+trait HasUuid
+{
     /**
      * Should disbale uuid generation for this model
      *
@@ -23,23 +22,23 @@ trait HasUuid {
      *
      * @var string
      */
-	protected $uuidFieldName;
+    protected $uuidFieldName;
 
 
-	/**
+    /**
      * Attach event name on which UUID will be added to model object
      *
      * @var string
      */
-	protected $attachEvent;
+    protected $attachEvent;
 
-	
-	/**
+
+    /**
      * Model user relation attach after action
      *
      * @var array
      */
-	protected $saveActionForEvents = ['created', 'updated'];
+    protected $saveActionForEvents = ['created', 'updated'];
 
 
     /**
@@ -48,50 +47,54 @@ trait HasUuid {
      * @param  bool $state
      * @return void
      */
-    public static function disbaleUuidGeneration(bool $state = true) {
+    public static function disbaleUuidGeneration(bool $state = true)
+    {
 
         static::$disbaleUuidGeneration = $state;
     }
 
-	
-	/**
+
+    /**
      * Attach UUID to model object
      *
      * @return void
      */
-	public static function bootHasUuid() {
+    public static function bootHasUuid()
+    {
 
-        $self = new self;
+        // Instantiate without the constructor, as newer Laravel versions forbid
+        // constructing a model while it is still being booted.
+        $self = (new ReflectionClass(self::class))->newInstanceWithoutConstructor();
 
         $self->initializeHasUuid();
 
-        if ( ! is_string($self->attachEvent) ) {
+        if (! is_string($self->attachEvent)) {
 
             return;
         }
 
-		static::{$self->attachEvent}(function($model) use ($self) {
-            
-            if ( $self::$disbaleUuidGeneration ) {
+        static::{$self->attachEvent}(function ($model) use ($self) {
+
+            if ($self::$disbaleUuidGeneration) {
 
                 return;
             }
-            
+
             $uuidFieldName  = $self->getUuidFieldName();
 
-            if ( ! $self->canHaveUuid($model->getTable(), $uuidFieldName) ) {
+            if (! $self->canHaveUuid($model->getTable(), $uuidFieldName)) {
 
                 return;
             }
-            
+
             $model->{$uuidFieldName} ?: $model->{$uuidFieldName} = $self->generateUuid();
 
-            if ( in_array($self->attachEvent, $self->saveActionForEvents) ) {
+            if (in_array($self->attachEvent, $self->saveActionForEvents)) {
 
                 method_exists($self, 'saveQuietly') ? $model->saveQuietly() : $model->saveModelQuietly();
             }
         });
-	}
+    }
 
 
     /**
@@ -99,36 +102,39 @@ trait HasUuid {
      *
      * @param  mixed<string|null> $table
      * @param  mixed<string|null> $column
-     * 
+     *
      * @return bool
      */
-    public function canHaveUuid(string $table = null, string $column = null) {
+    public function canHaveUuid(?string $table = null, ?string $column = null)
+    {
 
         return Schema::hasColumn($table ?? $this->getTable(), $column ?? $this->getUuidColumnName());
     }
 
 
-	/**
+    /**
      * Initialize the trait
      *
      * @return void
      */
-	public function initializeHasUuid() {
+    public function initializeHasUuid()
+    {
 
-		$mapedValues = method_exists($this, 'uuidable') ? $this->uuidable() : null;
+        $mapedValues = method_exists($this, 'uuidable') ? $this->uuidable() : null;
 
-		$this->uuidFieldName = $mapedValues['column']   ?? config('model-uuid.column')  ?? 'uuid';
-		$this->attachEvent   = $mapedValues['event']    ?? config('model-uuid.event')   ?? 'creating';
-	}
+        $this->uuidFieldName = $mapedValues['column']   ?? config('model-uuid.column')  ?? 'uuid';
+        $this->attachEvent   = $mapedValues['event']    ?? config('model-uuid.event')   ?? 'creating';
+    }
 
 
-	/**
+    /**
      * Get the UUID column field name
      *
      * @return string
      */
-	public function getUuidFieldName() {
-        
+    public function getUuidFieldName()
+    {
+
         return $this->getUuidColumnName();
     }
 
@@ -138,8 +144,9 @@ trait HasUuid {
      *
      * @return string
      */
-	public function getUuidAttachEvent() {
-        
+    public function getUuidAttachEvent()
+    {
+
         return $this->attachEvent;
     }
 
@@ -149,8 +156,9 @@ trait HasUuid {
      *
      * @return string
      */
-    public function generateUuid() {
-        
+    public function generateUuid()
+    {
+
         return Generator::uuid4();
     }
 
@@ -160,7 +168,8 @@ trait HasUuid {
      *
      * @return string
      */
-	public function getUuid() {
+    public function getUuid()
+    {
 
         return $this->attributes[$this->getUuidFieldName()] ?? null;
     }
@@ -176,7 +185,8 @@ trait HasUuid {
      *
      * @return Builder
      */
-    public function scopeByUuid(Builder $builder, $uuid) {
+    public function scopeByUuid(Builder $builder, $uuid)
+    {
 
         $method = is_array($uuid) ? 'whereIn' : 'where';
 
@@ -190,13 +200,14 @@ trait HasUuid {
      * @param  mixed<string|array>  $uuid
      * @return object
      */
-    public static function findByUuid($uuid) {
+    public static function findByUuid($uuid)
+    {
 
-        if ( is_array($uuid) ) {
+        if (is_array($uuid)) {
 
-            return static::whereIn((new self)->getUuidFieldName(), $uuid)->get();
+            return static::whereIn((new self())->getUuidFieldName(), $uuid)->get();
         }
-        
+
         return static::byUuid($uuid)->first();
     }
 
@@ -206,11 +217,12 @@ trait HasUuid {
      *
      * @return string
      */
-    protected function getUuidColumnName() {
+    protected function getUuidColumnName()
+    {
 
         $uuidColumn = null;
 
-        if ( ! $this->uuidFieldName ) {
+        if (! $this->uuidFieldName) {
 
             $this->initializeHasUuid();
         }

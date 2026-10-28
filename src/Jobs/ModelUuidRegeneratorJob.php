@@ -3,15 +3,14 @@
 namespace Touhidurabir\ModelUuid\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Touhidurabir\ModelUuid\UuidGenerator\Generator as UuidGenerator;
 
-class ModelUuidRegeneratorJob implements ShouldQueue {
-
+class ModelUuidRegeneratorJob implements ShouldQueue
+{
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
@@ -38,10 +37,11 @@ class ModelUuidRegeneratorJob implements ShouldQueue {
      *
      * @param  array $models
      * @param  bool $updateAll
-     * 
+     *
      * @return void
      */
-    public function __construct(array $models, bool $updateAll) {
+    public function __construct(array $models, bool $updateAll)
+    {
 
         $this->models       = $models;
         $this->updateAll    = $updateAll;
@@ -53,20 +53,21 @@ class ModelUuidRegeneratorJob implements ShouldQueue {
      *
      * @return void
      */
-    public function handle() {
+    public function handle()
+    {
 
-        foreach($this->models as $model) {
+        foreach ($this->models as $model) {
 
             $traits = class_uses_recursive($model);
 
-            if ( ! in_array('Touhidurabir\\ModelUuid\\HasUuid', array_values($traits)) ) {
+            if (! in_array('Touhidurabir\\ModelUuid\\HasUuid', array_values($traits))) {
 
                 continue;
             }
 
-            $instance = new $model;
-            
-            if ( ! $instance->canHaveUuid() ) {
+            $instance = new $model();
+
+            if (! $instance->canHaveUuid()) {
 
                 continue;
             }
@@ -86,5 +87,5 @@ class ModelUuidRegeneratorJob implements ShouldQueue {
             });
         }
     }
-    
+
 }

@@ -2,16 +2,16 @@
 
 namespace Touhidurabir\ModelUuid\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use Orchestra\Testbench\TestCase;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Touhidurabir\ModelUuid\Tests\App\User;
 use Touhidurabir\ModelUuid\Tests\App\Profile;
 use Touhidurabir\ModelUuid\Jobs\ModelUuidRegeneratorJob;
 use Touhidurabir\ModelUuid\Tests\Traits\LaravelTestBootstrapping;
 
-class RegeneratingJobTest extends TestCase {
-
+class RegeneratingJobTest extends TestCase
+{
     use LaravelTestBootstrapping;
 
     /**
@@ -19,10 +19,11 @@ class RegeneratingJobTest extends TestCase {
      *
      * @return void
      */
-    protected function defineDatabaseMigrations() {
+    protected function defineDatabaseMigrations()
+    {
 
         $this->loadMigrationsFrom(__DIR__ . '/App/database/migrations');
-        
+
         $this->artisan('migrate', ['--database' => 'testbench'])->run();
 
         $this->beforeApplicationDestroyed(function () {
@@ -34,7 +35,9 @@ class RegeneratingJobTest extends TestCase {
     /**
      * @test
      */
-    public function the_job_will_run() {
+    #[Test]
+    public function the_job_will_run()
+    {
 
         Bus::fake();
 
@@ -55,7 +58,9 @@ class RegeneratingJobTest extends TestCase {
     /**
      * @test
      */
-    public function the_job_can_fill_out_missing_uuid() {
+    #[Test]
+    public function the_job_can_fill_out_missing_uuid()
+    {
 
         User::disbaleUuidGeneration();
 
@@ -63,7 +68,7 @@ class RegeneratingJobTest extends TestCase {
 
         $this->assertNull($user->getUuid());
 
-        ModelUuidRegeneratorJob::dispatchNow(
+        ModelUuidRegeneratorJob::dispatchSync(
             [\Touhidurabir\ModelUuid\Tests\App\User::class],
             true
         );
