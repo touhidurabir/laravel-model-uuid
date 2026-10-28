@@ -5,30 +5,32 @@ namespace Touhidurabir\ModelUuid\Tests\Traits;
 use Touhidurabir\ModelUuid\Facades\ModelUuid;
 use Touhidurabir\ModelUuid\ModelUuidServiceProvider;
 
-trait LaravelTestBootstrapping {
-
+trait LaravelTestBootstrapping
+{
     /**
      * Get package providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageProviders($app) {
+    protected function getPackageProviders($app)
+    {
 
         return [
             ModelUuidServiceProvider::class,
         ];
-    }   
-    
-    
+    }
+
+
     /**
      * Override application aliases.
      *
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
-    protected function getPackageAliases($app) {
-        
+    protected function getPackageAliases($app)
+    {
+
         return [
             'ModelUuid' => ModelUuid::class,
         ];
@@ -41,7 +43,8 @@ trait LaravelTestBootstrapping {
      * @param  Illuminate\Foundation\Application $app
      * @return void
      */
-    protected function defineEnvironment($app) {
+    protected function defineEnvironment($app)
+    {
 
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');

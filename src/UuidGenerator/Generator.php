@@ -2,18 +2,17 @@
 
 namespace Touhidurabir\ModelUuid\UuidGenerator;
 
-use Throwable;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
-class Generator {
-
+class Generator
+{
     /**
      * Generate the uuid type 4
      *
      * @return string
      */
-    public static function uuid4() {
+    public static function uuid4()
+    {
 
         return Uuid::uuid4()->toString();
     }
@@ -23,9 +22,10 @@ class Generator {
      *
      * @return string
      */
-    public function generate() {
+    public function generate()
+    {
 
         return static::uuid4();
     }
-    
+
 }

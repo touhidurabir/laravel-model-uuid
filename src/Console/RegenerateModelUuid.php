@@ -7,8 +7,8 @@ use Throwable;
 use Illuminate\Console\Command;
 use Touhidurabir\ModelUuid\Console\Concerns\CommandExceptionHandler;
 
-class RegenerateModelUuid extends Command {
-
+class RegenerateModelUuid extends Command
+{
     /**
      * Process the handeled exception and provide output
      */
@@ -41,8 +41,9 @@ class RegenerateModelUuid extends Command {
      *
      * @return void
      */
-    public function __construct() {
-        
+    public function __construct()
+    {
+
         parent::__construct();
     }
 
@@ -52,25 +53,26 @@ class RegenerateModelUuid extends Command {
      *
      * @return mixed
      */
-    public function handle() {
+    public function handle()
+    {
 
         $this->info('Initiating uuid regenration process');
 
         try {
-            
-            if ( empty(
-                $models = $this->buildFullModelsNamespace( explode(',', $this->argument('models')) )) 
+
+            if (empty(
+                $models = $this->buildFullModelsNamespace(explode(',', $this->argument('models'))))
             ) {
 
                 return $this->handleFailure('No model has provided');
             }
 
-            if ( ! class_exists($job = $this->option('job') ?? config('model-uuid.regeneration_job')) ) {
+            if (! class_exists($job = $this->option('job') ?? config('model-uuid.regeneration_job'))) {
 
                 return $this->handleFailure('Job class not found');
             }
 
-            if ( $this->option('on-job') )  {
+            if ($this->option('on-job')) {
 
                 $job::dispatch($models, $this->option('update-all'));
 
@@ -84,10 +86,10 @@ class RegenerateModelUuid extends Command {
                 $job::{$dispatchMethod}($models, $this->option('update-all'));
 
                 $this->info('Model UUID regenration process completed');
-            } 
-            
+            }
+
         } catch (Throwable $exception) {
-            
+
             $this->outputConsoleException($exception);
 
             return 1;
@@ -101,13 +103,14 @@ class RegenerateModelUuid extends Command {
      * @param  array $models
      * @return array
      */
-    protected function buildFullModelsNamespace(array $models = []) {
-        
+    protected function buildFullModelsNamespace(array $models = [])
+    {
+
         $models = array_map('trim', array_filter(array_unique($models)));
-        
+
         foreach ($models as $index => $model) {
 
-            if ( $this->hasNamespaceAssociatedWith($model) ) {
+            if ($this->hasNamespaceAssociatedWith($model)) {
 
                 continue;
             }
@@ -127,11 +130,12 @@ class RegenerateModelUuid extends Command {
      * @param  string $name
      * @return mixed<string|null>
      */
-    public function hasNamespaceAssociatedWith(string $name) {
+    public function hasNamespaceAssociatedWith(string $name)
+    {
 
         $classFullNameExplode = explode('\\', $name);
 
-        if ( count($classFullNameExplode) <= 1 ) {
+        if (count($classFullNameExplode) <= 1) {
 
             return false;
         }
@@ -144,15 +148,16 @@ class RegenerateModelUuid extends Command {
      * Handle some basic failure case
      *
      * @param  string $message
-     * @param  int    $return 
-     * 
+     * @param  int    $return
+     *
      * @return int
      */
-    protected function handleFailure(string $message, int $return = 1) {
-        
+    protected function handleFailure(string $message, int $return = 1)
+    {
+
         $this->error($message) ;
 
         return $return;
     }
-    
+
 }

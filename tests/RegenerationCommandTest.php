@@ -5,15 +5,12 @@ namespace Touhidurabir\ModelUuid\Tests;
 use PHPUnit\Framework\Attributes\Test;
 use Orchestra\Testbench\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Illuminate\Support\Collection;
 use Touhidurabir\ModelUuid\Tests\App\User;
-use Touhidurabir\ModelUuid\Tests\App\Profile;
 use Touhidurabir\ModelUuid\Console\RegenerateModelUuid;
-use Touhidurabir\ModelUuid\Jobs\ModelUuidRegeneratorJob;
 use Touhidurabir\ModelUuid\Tests\Traits\LaravelTestBootstrapping;
 
-class RegenerationCommandTest extends TestCase {
-
+class RegenerationCommandTest extends TestCase
+{
     use LaravelTestBootstrapping;
 
     /**
@@ -29,10 +26,11 @@ class RegenerationCommandTest extends TestCase {
      *
      * @return void
      */
-    protected function defineDatabaseMigrations() {
+    protected function defineDatabaseMigrations()
+    {
 
         $this->loadMigrationsFrom(__DIR__ . '/App/database/migrations');
-        
+
         $this->artisan('migrate', ['--database' => 'testbench'])->run();
 
         $this->beforeApplicationDestroyed(function () {
@@ -46,7 +44,8 @@ class RegenerationCommandTest extends TestCase {
      *
      * @return void
      */
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
 
         parent::setUp();
 
@@ -54,9 +53,10 @@ class RegenerationCommandTest extends TestCase {
     }
 
 
-    protected function configureTestCommand() {
+    protected function configureTestCommand()
+    {
 
-        $command = new RegenerateModelUuid;
+        $command = new RegenerateModelUuid();
         $command->setLaravel($this->app);
 
         $this->regenerationCommand = new CommandTester($command);
@@ -67,7 +67,8 @@ class RegenerationCommandTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_command_will_run() {
+    public function the_command_will_run()
+    {
 
         $status = $this->regenerationCommand->execute([
             'models' => 'Touhidurabir\\ModelUuid\\Tests\\App\\User,Touhidurabir\\ModelUuid\\Tests\\App\\Profile',
@@ -88,7 +89,8 @@ class RegenerationCommandTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_command_will_fail_given_wrong() {
+    public function the_command_will_fail_given_wrong()
+    {
 
         $status = $this->regenerationCommand->execute([
             'models' => 'Touhidurabir\\ModelUuid\\Tests\\App\\Testing,',
@@ -101,14 +103,15 @@ class RegenerationCommandTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_command_will_run_properly_with_provided_job() {
+    public function the_command_will_run_properly_with_provided_job()
+    {
 
         $status = $this->regenerationCommand->execute([
             'models' => 'Touhidurabir\\ModelUuid\\Tests\\App\\User,Touhidurabir\\ModelUuid\\Tests\\App\\Profile',
             '--job'  => 'Touhidurabir\\ModelUuid\\Jobs\\ModelUuidRegeneratorJob'
         ]);
 
-        $this->assertEquals($status, 0);        
+        $this->assertEquals($status, 0);
     }
 
 
@@ -116,14 +119,15 @@ class RegenerationCommandTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_command_will_fail_given_wrong_job() {
+    public function the_command_will_fail_given_wrong_job()
+    {
 
         $status = $this->regenerationCommand->execute([
             'models' => 'Touhidurabir\\ModelUuid\\Tests\\App\\User,Touhidurabir\\ModelUuid\\Tests\\App\\Profile',
             '--job'  => 'Touhidurabir\\ModelUuid\\NonExistingJob'
         ]);
 
-        $this->assertEquals($status, 1);        
+        $this->assertEquals($status, 1);
     }
 
 
@@ -131,7 +135,8 @@ class RegenerationCommandTest extends TestCase {
      * @test
      */
     #[Test]
-    public function the_command_will_run_set_proper_uuid_for_missing_rows() {
+    public function the_command_will_run_set_proper_uuid_for_missing_rows()
+    {
 
         User::disbaleUuidGeneration();
 

@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Fixed `LogicException` on recent Laravel versions caused by instantiating the model while it was being booted in `HasUuid::bootHasUuid`.
 - Fixed `uuid:regenerate` command on Laravel 10+ by using `dispatchSync` (with `dispatchNow` fallback) for the non-queued run.
 - Fixed PHP 8.4 implicit nullable parameter deprecation in `HasUuid::canHaveUuid`.
+- Code style formatted to PSR-12 with Laravel Pint (`composer format` / `composer lint`).
 
 
 ## [1.0.0] - 2021-08-14
